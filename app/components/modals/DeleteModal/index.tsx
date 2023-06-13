@@ -17,7 +17,7 @@ const DeleteModal: React.FC<DeleteModalType> = ({ visible }) => {
       <Modal.Body className="px-6 pb-6 pt-0">
         <div className="flex flex-col items-center gap-y-6 text-center">
           <HiOutlineExclamationCircle className="text-7xl text-red-500" />
-          <p className="text-xl text-gray-500">
+          <p className="text-base text-gray-500">
             Are you sure you want to delete
           </p>
           <form method="POST" className="flex items-center gap-x-3">
