@@ -18,7 +18,7 @@ import { Flowbite } from "flowbite-react";
 import theme from "~/flowbite-theme";
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+  return [{ title: "THAMC" }];
 };
 
 export const links: LinksFunction = () => {

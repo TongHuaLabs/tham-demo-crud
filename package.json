@@ -27,6 +27,7 @@
     "/server/build"
   ],
   "dependencies": {
+    "@heroicons/react": "^2.0.18",
     "@netlify/functions": "^1.6.0",
     "@remix-run/netlify": "^1.6.8",
     "@remix-run/node": "^1.6.8",

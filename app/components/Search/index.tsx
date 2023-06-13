@@ -3,10 +3,11 @@ import { Label, TextInput } from "flowbite-react";
 import { HiSearch } from "react-icons/hi";
 
 type SearchType = {
+  defaultValue?: string;
   className?: string;
 };
 
-const Search: FC<SearchType> = ({ className }) => {
+const Search: FC<SearchType> = ({ defaultValue, className }) => {
   return (
     <form className={className}>
       <Label htmlFor="search" className="sr-only">
@@ -17,7 +18,7 @@ const Search: FC<SearchType> = ({ className }) => {
         id="search"
         name="search"
         placeholder="Search"
-        required
+        defaultValue={defaultValue}
         size={32}
         type="search"
       />

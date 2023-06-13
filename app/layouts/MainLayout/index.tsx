@@ -18,7 +18,7 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
   return (
     <SidebarProvider>
       <Navbar />
-      <div className="flex items-start pt-16">
+      <div className="flex items-start pt-20">
         <Sidebar />
         <MainContent isFooter={isFooter}>{children}</MainContent>
       </div>

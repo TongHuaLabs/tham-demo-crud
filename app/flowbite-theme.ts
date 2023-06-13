@@ -63,6 +63,11 @@ const flowbiteTheme: CustomFlowbiteTheme = {
       },
     },
   },
+  // table: {
+  //   head: {
+  //     base: "!text-red-500"
+  //   }
+  // }
 };
 
 export default flowbiteTheme;
