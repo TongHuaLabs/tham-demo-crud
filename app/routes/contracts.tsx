@@ -1,6 +1,6 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useLocation } from "@remix-run/react";
 import Pagination from "~/components/Pagination";
 import Layout from "~/layouts/MainLayout";
 import Search from "~/components/Search";
@@ -154,6 +154,8 @@ export default function ContractPage() {
     customers,
   } = useLoaderData<typeof loader>();
 
+  const { search: locationSearch } = useLocation();
+
   const hasSearch = search && `search=${search}&`;
 
   return (
@@ -164,7 +166,13 @@ export default function ContractPage() {
         </h2>
         <div className="flex items-center justify-between">
           <Search className="w-1/2" defaultValue={search} />
-          <Link to="?modal-type=add">
+          <Link
+            to={
+              locationSearch
+                ? `${locationSearch}&modal-type=add`
+                : `?modal-type=add`
+            }
+          >
             <Button color="success">
               <div className="flex items-center gap-x-2">
                 <HiPlus className="text-lg" />
@@ -188,7 +196,11 @@ export default function ContractPage() {
                 : `/contracts?${hasSearch}page=${totalPage}`
             }
           />
-          <ContractsTable contracts={contracts} currentPage={currentPage} />
+          <ContractsTable
+            contracts={contracts}
+            currentPage={currentPage}
+            hasSearch={hasSearch}
+          />
         </div>
       </div>
       <DeleteModal visible={modal === "delete"} />

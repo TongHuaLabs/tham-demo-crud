@@ -6,11 +6,13 @@ import { Link } from "@remix-run/react";
 
 interface ContractsTableType {
   currentPage: number;
+  hasSearch: string;
   contracts: Contract[];
 }
 
 const ContractsTable: React.FC<ContractsTableType> = ({
   currentPage,
+  hasSearch,
   contracts,
 }) => {
   return (
@@ -65,7 +67,7 @@ const ContractsTable: React.FC<ContractsTableType> = ({
               <Table.Cell className="text-base text-gray-900 dark:text-white">
                 <div className="flex items-center space-x-4">
                   <Link
-                    to={`?page=${currentPage}&contractId=${id}&modal-type=edit`}
+                    to={`?${hasSearch}page=${currentPage}&contractId=${id}&modal-type=edit`}
                   >
                     <Button color="info">
                       <div className="flex items-center gap-x-2">
@@ -75,7 +77,7 @@ const ContractsTable: React.FC<ContractsTableType> = ({
                     </Button>
                   </Link>
                   <Link
-                    to={`?page=${currentPage}&contractId=${id}&modal-type=delete`}
+                    to={`?${hasSearch}page=${currentPage}&contractId=${id}&modal-type=delete`}
                   >
                     <Button color="failure">
                       <div className="flex items-center gap-x-2">

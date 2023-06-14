@@ -6,11 +6,13 @@ import { Link } from "@remix-run/react";
 
 interface CustomersTableType {
   currentPage: number;
+  hasSearch: string;
   customers: Customer[];
 }
 
 const CustomersTable: React.FC<CustomersTableType> = ({
   currentPage,
+  hasSearch,
   customers,
 }) => {
   return (
@@ -67,7 +69,7 @@ const CustomersTable: React.FC<CustomersTableType> = ({
               <Table.Cell className="text-base text-gray-900 dark:text-white">
                 <div className="flex items-center space-x-4">
                   <Link
-                    to={`?page=${currentPage}&customerId=${id}&modal-type=edit`}
+                    to={`?${hasSearch}page=${currentPage}&customerId=${id}&modal-type=edit`}
                   >
                     <Button color="info">
                       <div className="flex items-center gap-x-2">
@@ -77,7 +79,7 @@ const CustomersTable: React.FC<CustomersTableType> = ({
                     </Button>
                   </Link>
                   <Link
-                    to={`?page=${currentPage}&customerId=${id}&modal-type=delete`}
+                    to={`?${hasSearch}page=${currentPage}&customerId=${id}&modal-type=delete`}
                   >
                     <Button color="failure">
                       <div className="flex items-center gap-x-2">

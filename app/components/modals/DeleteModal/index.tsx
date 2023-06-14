@@ -10,7 +10,7 @@ type DeleteModalType = {
 const DeleteModal: React.FC<DeleteModalType> = ({ visible }) => {
   const navigate = useNavigate();
   return (
-    <Modal show={visible} size="md" onClose={() => navigate("#")}>
+    <Modal show={visible} size="md" onClose={() => navigate(-1)}>
       <Modal.Header className="px-6 pb-0 pt-6">
         <span className="sr-only">Delete</span>
       </Modal.Header>

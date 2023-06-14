@@ -12,7 +12,7 @@ type AddModalType = {
 const AddModal: React.FC<AddModalType> = ({ title, visible, body }) => {
   const navigate = useNavigate();
   return (
-    <Modal onClose={() => navigate("#")} show={visible}>
+    <Modal onClose={() => navigate(-1)} show={visible}>
       <form method="POST">
         <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
           <strong>{title}</strong>

@@ -1,6 +1,6 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useLocation } from "@remix-run/react";
 import Pagination from "~/components/Pagination";
 import CustomersTable from "~/components/tables/CustomersTable";
 import Layout from "~/layouts/MainLayout";
@@ -155,6 +155,7 @@ export default function CustomerPage() {
     currentPage,
     modal,
   } = useLoaderData<typeof loader>();
+  const { search: locationSearch } = useLocation();
 
   const hasSearch = search && `search=${search}&`;
 
@@ -166,7 +167,13 @@ export default function CustomerPage() {
         </h2>
         <div className="flex items-center justify-between">
           <Search className="w-1/2" defaultValue={search} />
-          <Link to="?modal-type=add">
+          <Link
+            to={
+              locationSearch
+                ? `${locationSearch}&modal-type=add`
+                : `?modal-type=add`
+            }
+          >
             <Button color="success">
               <div className="flex items-center gap-x-2">
                 <HiPlus className="text-lg" />
@@ -190,7 +197,11 @@ export default function CustomerPage() {
                 : `/customers?${hasSearch}page=${totalPage}`
             }
           />
-          <CustomersTable customers={customers} currentPage={currentPage} />
+          <CustomersTable
+            customers={customers}
+            currentPage={currentPage}
+            hasSearch={hasSearch}
+          />
         </div>
       </div>
       <DeleteModal visible={modal === "delete"} />
