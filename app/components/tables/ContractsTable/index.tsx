@@ -65,8 +65,7 @@ const ContractsTable: React.FC<ContractsTableType> = ({
               <Table.Cell className="text-base text-gray-900 dark:text-white">
                 <div className="flex items-center space-x-4">
                   <Link
-                    // to={`?page=${currentPage}&contract=${contract_no}&modal-type=edit`}
-                    to={`#`}
+                    to={`?page=${currentPage}&contractId=${id}&modal-type=edit`}
                   >
                     <Button color="info">
                       <div className="flex items-center gap-x-2">
@@ -76,7 +75,7 @@ const ContractsTable: React.FC<ContractsTableType> = ({
                     </Button>
                   </Link>
                   <Link
-                    to={`?page=${currentPage}&contract=${contract_no}&modal-type=delete`}
+                    to={`?page=${currentPage}&contractId=${id}&modal-type=delete`}
                   >
                     <Button color="failure">
                       <div className="flex items-center gap-x-2">

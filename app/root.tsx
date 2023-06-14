@@ -51,3 +51,7 @@ export default function App() {
     </Flowbite>
   );
 }
+
+export function ErrorBoundary() {
+  return <div>THAMC NOT FOUND</div>;
+}

@@ -56,6 +56,7 @@ function handleRequest(request, responseStatusCode, responseHeaders, remixContex
 // app/root.tsx
 var root_exports = {};
 __export(root_exports, {
+  ErrorBoundary: () => ErrorBoundary,
   default: () => App,
   links: () => links,
   loader: () => loader,
@@ -64,7 +65,7 @@ __export(root_exports, {
 var import_node2 = require("@remix-run/node"), import_react4 = require("@remix-run/react");
 
 // app/styles/tailwind.css
-var tailwind_default = "/build/_assets/tailwind-2JBA7G5S.css";
+var tailwind_default = "/build/_assets/tailwind-D3FUIBWJ.css";
 
 // app/session.server.ts
 var import_node = require("@remix-run/node"), import_tiny_invariant2 = __toESM(require("tiny-invariant"));
@@ -313,6 +314,13 @@ function App() {
     columnNumber: 5
   }, this);
 }
+function ErrorBoundary() {
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime2.jsxDEV)("div", { children: "THAMC NOT FOUND" }, void 0, !1, {
+    fileName: "app/root.tsx",
+    lineNumber: 56,
+    columnNumber: 10
+  }, this);
+}
 
 // app/routes/contracts.tsx
 var contracts_exports = {};
@@ -321,7 +329,7 @@ __export(contracts_exports, {
   default: () => ContractPage,
   loader: () => loader2
 });
-var import_node3 = require("@remix-run/node"), import_react11 = require("@remix-run/react");
+var import_node3 = require("@remix-run/node"), import_react13 = require("@remix-run/react");
 
 // app/components/Pagination/index.tsx
 var import_react5 = require("@remix-run/react"), import_solid = require("@heroicons/react/24/solid"), import_jsx_dev_runtime3 = require("react/jsx-dev-runtime"), Pagination = ({
@@ -2627,7 +2635,7 @@ var import_classnames2 = __toESM(require("classnames")), import_jsx_dev_runtime8
 }, this), MainLayout_default = MainLayout;
 
 // app/routes/contracts.tsx
-var import_hi6 = require("react-icons/hi");
+var import_hi8 = require("react-icons/hi");
 
 // app/components/modals/DeleteModal/index.tsx
 var import_flowbite_react6 = require("flowbite-react"), import_hi4 = require("react-icons/hi"), import_react9 = require("@remix-run/react"), import_jsx_dev_runtime9 = require("react/jsx-dev-runtime"), DeleteModal = ({ visible }) => {
@@ -2690,7 +2698,7 @@ var import_flowbite_react6 = require("flowbite-react"), import_hi4 = require("re
 }, DeleteModal_default = DeleteModal;
 
 // app/routes/contracts.tsx
-var import_flowbite_react8 = require("flowbite-react");
+var import_flowbite_react12 = require("flowbite-react");
 
 // app/models/contracts.sever.ts
 var query = "*, debt_series(name), oas(name), customers(first_name, last_name, tel_no)";
@@ -2698,13 +2706,29 @@ async function getContractListItems(params) {
   let { from, to } = params || {}, { data, count, error } = await supabase.from("contracts").select(query, { count: "exact" }).order("id", { ascending: !0 }).range(from || 0, to || 999999999);
   return { data, count: count || 0, error };
 }
+async function getContractByContractNo(contractId) {
+  let { data, error } = await supabase.from("contracts").select(query).eq("id", contractId).single();
+  return { data, error };
+}
 async function searchContract(params) {
   let { search, to, from } = params || {}, { data, count, error } = await supabase.from("contracts").select(query, { count: "exact" }).order("id", { ascending: !0 }).like("contract_no", `%${search}%`).range(from || 0, to || 999999999);
   return { data, count: count || 0, error };
 }
-async function deleteContract(contract_no) {
-  let { error } = await supabase.from("contracts").delete({ returning: "minimal" }).eq("contract_no", contract_no);
+async function deleteContract(contractId) {
+  let { error } = await supabase.from("contracts").delete({ returning: "minimal" }).eq("id", contractId);
   return error ? null : {};
+}
+async function createContract({ contract_no, os_balance, financial_institution, debt_serie_id, oa_id, customer_id }) {
+  let { data, error } = await supabase.from("contracts").insert([{ contract_no, os_balance, financial_institution, debt_serie_id, oa_id, customer_id }]).single();
+  return error ? null : data;
+}
+async function updateContract({ contractId, contract_no, os_balance, financial_institution, debt_serie_id, oa_id, customer_id }) {
+  let { data, error } = await supabase.from("contracts").update({ contract_no, os_balance, financial_institution, debt_serie_id, oa_id, customer_id }).eq("id", contractId).single();
+  return error ? null : data;
+}
+async function getOptionListItems() {
+  let { data: debt_series } = await supabase.from("debt_series").select("*").order("id", { ascending: !0 }), { data: oas } = await supabase.from("oas").select("*").order("id", { ascending: !0 }), { data: customers } = await supabase.from("customers").select("*").order("id", { ascending: !0 });
+  return { debt_series, oas, customers };
 }
 
 // app/components/tables/ContractsTable/index.tsx
@@ -2816,21 +2840,21 @@ var import_flowbite_react7 = require("flowbite-react"), import_hi5 = require("re
             /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)(
               import_react10.Link,
               {
-                to: "#",
+                to: `?page=${currentPage}&contractId=${id}&modal-type=edit`,
                 children: /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)(import_flowbite_react7.Button, { color: "info", children: /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
                   /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)(import_hi5.HiOutlinePencilAlt, { className: "text-lg" }, void 0, !1, {
                     fileName: "app/components/tables/ContractsTable/index.tsx",
-                    lineNumber: 73,
+                    lineNumber: 72,
                     columnNumber: 25
                   }, this),
                   "Edit"
                 ] }, void 0, !0, {
                   fileName: "app/components/tables/ContractsTable/index.tsx",
-                  lineNumber: 72,
+                  lineNumber: 71,
                   columnNumber: 23
                 }, this) }, void 0, !1, {
                   fileName: "app/components/tables/ContractsTable/index.tsx",
-                  lineNumber: 71,
+                  lineNumber: 70,
                   columnNumber: 21
                 }, this)
               },
@@ -2846,21 +2870,21 @@ var import_flowbite_react7 = require("flowbite-react"), import_hi5 = require("re
             /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)(
               import_react10.Link,
               {
-                to: `?page=${currentPage}&contract=${contract_no}&modal-type=delete`,
+                to: `?page=${currentPage}&contractId=${id}&modal-type=delete`,
                 children: /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)(import_flowbite_react7.Button, { color: "failure", children: /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
                   /* @__PURE__ */ (0, import_jsx_dev_runtime10.jsxDEV)(import_hi5.HiTrash, { className: "text-lg" }, void 0, !1, {
                     fileName: "app/components/tables/ContractsTable/index.tsx",
-                    lineNumber: 83,
+                    lineNumber: 82,
                     columnNumber: 25
                   }, this),
                   "Delete"
                 ] }, void 0, !0, {
                   fileName: "app/components/tables/ContractsTable/index.tsx",
-                  lineNumber: 82,
+                  lineNumber: 81,
                   columnNumber: 23
                 }, this) }, void 0, !1, {
                   fileName: "app/components/tables/ContractsTable/index.tsx",
-                  lineNumber: 81,
+                  lineNumber: 80,
                   columnNumber: 21
                 }, this)
               },
@@ -2868,7 +2892,7 @@ var import_flowbite_react7 = require("flowbite-react"), import_hi5 = require("re
               !1,
               {
                 fileName: "app/components/tables/ContractsTable/index.tsx",
-                lineNumber: 78,
+                lineNumber: 77,
                 columnNumber: 19
               },
               this
@@ -2904,19 +2928,547 @@ var import_flowbite_react7 = require("flowbite-react"), import_hi5 = require("re
   columnNumber: 5
 }, this), ContractsTable_default = ContractsTable;
 
+// app/components/modals/AddModal/index.tsx
+var import_flowbite_react8 = require("flowbite-react"), import_hi6 = require("react-icons/hi"), import_react11 = require("@remix-run/react"), import_jsx_dev_runtime11 = require("react/jsx-dev-runtime"), AddModal = ({ title, visible, body }) => {
+  let navigate = (0, import_react11.useNavigate)();
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_flowbite_react8.Modal, { onClose: () => navigate("#"), show: visible, children: /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)("form", { method: "POST", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_flowbite_react8.Modal.Header, { className: "border-b border-gray-200 !p-6 dark:border-gray-700", children: /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)("strong", { children: title }, void 0, !1, {
+      fileName: "app/components/modals/AddModal/index.tsx",
+      lineNumber: 18,
+      columnNumber: 11
+    }, this) }, void 0, !1, {
+      fileName: "app/components/modals/AddModal/index.tsx",
+      lineNumber: 17,
+      columnNumber: 9
+    }, this),
+    body,
+    /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_flowbite_react8.Modal.Footer, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_flowbite_react8.Button, { color: "success", type: "submit", className: "px-1", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_hi6.HiPlus, { className: "mr-1" }, void 0, !1, {
+        fileName: "app/components/modals/AddModal/index.tsx",
+        lineNumber: 23,
+        columnNumber: 13
+      }, this),
+      "Add"
+    ] }, void 0, !0, {
+      fileName: "app/components/modals/AddModal/index.tsx",
+      lineNumber: 22,
+      columnNumber: 11
+    }, this) }, void 0, !1, {
+      fileName: "app/components/modals/AddModal/index.tsx",
+      lineNumber: 21,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modals/AddModal/index.tsx",
+    lineNumber: 16,
+    columnNumber: 7
+  }, this) }, void 0, !1, {
+    fileName: "app/components/modals/AddModal/index.tsx",
+    lineNumber: 15,
+    columnNumber: 5
+  }, this);
+}, AddModal_default = AddModal;
+
+// app/components/modal-body/contract/AddModalBody/index.tsx
+var import_flowbite_react9 = require("flowbite-react"), import_jsx_dev_runtime12 = require("react/jsx-dev-runtime"), AddModalBody = ({
+  debt_series,
+  oas,
+  customers
+}) => /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Modal.Body, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2", children: [
+  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Label, { htmlFor: "contract_no", children: "Contract No" }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 29,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(
+      import_flowbite_react9.TextInput,
+      {
+        id: "contract_no",
+        name: "contract_no",
+        placeholder: "1985773591145419",
+        required: !0
+      },
+      void 0,
+      !1,
+      {
+        fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+        lineNumber: 31,
+        columnNumber: 13
+      },
+      this
+    ) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 30,
+      columnNumber: 11
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+    lineNumber: 28,
+    columnNumber: 9
+  }, this),
+  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Label, { htmlFor: "financial_institution", children: "Financial Institution" }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 40,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(
+      import_flowbite_react9.TextInput,
+      {
+        id: "financial_institution",
+        name: "financial_institution",
+        placeholder: "AEON",
+        required: !0
+      },
+      void 0,
+      !1,
+      {
+        fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+        lineNumber: 42,
+        columnNumber: 13
+      },
+      this
+    ) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 41,
+      columnNumber: 11
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+    lineNumber: 39,
+    columnNumber: 9
+  }, this),
+  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Label, { htmlFor: "os_balance", children: "OS Balance" }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 51,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(
+      import_flowbite_react9.TextInput,
+      {
+        id: "os_balance",
+        name: "os_balance",
+        placeholder: "15000",
+        required: !0
+      },
+      void 0,
+      !1,
+      {
+        fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+        lineNumber: 53,
+        columnNumber: 13
+      },
+      this
+    ) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 52,
+      columnNumber: 11
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+    lineNumber: 50,
+    columnNumber: 9
+  }, this),
+  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Label, { htmlFor: "debt_serie_id", children: "Debt Serie" }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 62,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Select, { id: "debt_serie_id", name: "debt_serie_id", children: debt_series == null ? void 0 : debt_series.map((debt_serie) => {
+      let { id, name } = debt_serie;
+      return /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("option", { value: id, children: name }, id, !1, {
+        fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+        lineNumber: 68,
+        columnNumber: 19
+      }, this);
+    }) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 64,
+      columnNumber: 13
+    }, this) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 63,
+      columnNumber: 11
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+    lineNumber: 61,
+    columnNumber: 9
+  }, this),
+  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Label, { htmlFor: "oa_id", children: "OA" }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 77,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Select, { id: "oa_id", name: "oa_id", children: oas == null ? void 0 : oas.map((oa) => {
+      let { id, name } = oa;
+      return /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("option", { value: id, children: name }, id, !1, {
+        fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+        lineNumber: 83,
+        columnNumber: 19
+      }, this);
+    }) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 79,
+      columnNumber: 13
+    }, this) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 78,
+      columnNumber: 11
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+    lineNumber: 76,
+    columnNumber: 9
+  }, this),
+  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Label, { htmlFor: "customer_id", children: "Customer" }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 92,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Select, { id: "customer_id", name: "customer_id", children: customers == null ? void 0 : customers.map((customer) => {
+      let { id, first_name, last_name, national_id } = customer;
+      return /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("option", { value: id, children: [
+        first_name,
+        " ",
+        last_name,
+        " (",
+        national_id,
+        ")"
+      ] }, id, !0, {
+        fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+        lineNumber: 98,
+        columnNumber: 19
+      }, this);
+    }) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 94,
+      columnNumber: 13
+    }, this) }, void 0, !1, {
+      fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+      lineNumber: 93,
+      columnNumber: 11
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+    lineNumber: 91,
+    columnNumber: 9
+  }, this)
+] }, void 0, !0, {
+  fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+  lineNumber: 27,
+  columnNumber: 7
+}, this) }, void 0, !1, {
+  fileName: "app/components/modal-body/contract/AddModalBody/index.tsx",
+  lineNumber: 26,
+  columnNumber: 5
+}, this), AddModalBody_default = AddModalBody;
+
+// app/components/modals/UpdateItemModal/index.tsx
+var import_flowbite_react10 = require("flowbite-react"), import_hi7 = require("react-icons/hi"), import_react12 = require("@remix-run/react"), import_jsx_dev_runtime13 = require("react/jsx-dev-runtime"), UpdateItemModal = ({
+  title,
+  visible,
+  body
+}) => {
+  let navigate = (0, import_react12.useNavigate)();
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Modal, { onClose: () => navigate("#"), show: visible, children: /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)("form", { method: "POST", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Modal.Header, { className: "border-b border-gray-200 !p-6 dark:border-gray-700", children: /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)("strong", { children: title }, void 0, !1, {
+      fileName: "app/components/modals/UpdateItemModal/index.tsx",
+      lineNumber: 22,
+      columnNumber: 11
+    }, this) }, void 0, !1, {
+      fileName: "app/components/modals/UpdateItemModal/index.tsx",
+      lineNumber: 21,
+      columnNumber: 9
+    }, this),
+    body,
+    /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Modal.Footer, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Button, { color: "warning", type: "submit", className: "px-1", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_hi7.HiOutlinePencilAlt, { className: "mr-1" }, void 0, !1, {
+        fileName: "app/components/modals/UpdateItemModal/index.tsx",
+        lineNumber: 27,
+        columnNumber: 13
+      }, this),
+      "Update"
+    ] }, void 0, !0, {
+      fileName: "app/components/modals/UpdateItemModal/index.tsx",
+      lineNumber: 26,
+      columnNumber: 11
+    }, this) }, void 0, !1, {
+      fileName: "app/components/modals/UpdateItemModal/index.tsx",
+      lineNumber: 25,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modals/UpdateItemModal/index.tsx",
+    lineNumber: 20,
+    columnNumber: 7
+  }, this) }, void 0, !1, {
+    fileName: "app/components/modals/UpdateItemModal/index.tsx",
+    lineNumber: 19,
+    columnNumber: 5
+  }, this);
+}, UpdateItemModal_default = UpdateItemModal;
+
+// app/components/modal-body/contract/UpdateModalBody/index.tsx
+var import_flowbite_react11 = require("flowbite-react"), import_jsx_dev_runtime14 = require("react/jsx-dev-runtime"), UpdateModalBody = ({
+  debt_series,
+  oas,
+  customers,
+  contract
+}) => {
+  let {
+    contract_no,
+    financial_institution,
+    debt_serie_id,
+    oa_id,
+    os_balance,
+    customer_id
+  } = contract || {};
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Modal.Body, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Label, { htmlFor: "contract_no", children: "Contract No" }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 33,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(
+        import_flowbite_react11.TextInput,
+        {
+          id: "contract_no",
+          name: "contract_no",
+          placeholder: "1985773591145419",
+          defaultValue: contract_no,
+          required: !0
+        },
+        void 0,
+        !1,
+        {
+          fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+          lineNumber: 35,
+          columnNumber: 13
+        },
+        this
+      ) }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 34,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, !0, {
+      fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+      lineNumber: 32,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Label, { htmlFor: "financial_institution", children: "Financial Institution" }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 45,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(
+        import_flowbite_react11.TextInput,
+        {
+          id: "financial_institution",
+          name: "financial_institution",
+          placeholder: "AEON",
+          defaultValue: financial_institution,
+          required: !0
+        },
+        void 0,
+        !1,
+        {
+          fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+          lineNumber: 47,
+          columnNumber: 13
+        },
+        this
+      ) }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 46,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, !0, {
+      fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+      lineNumber: 44,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Label, { htmlFor: "os_balance", children: "OS Balance" }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 57,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(
+        import_flowbite_react11.TextInput,
+        {
+          id: "os_balance",
+          name: "os_balance",
+          placeholder: "15000",
+          defaultValue: os_balance,
+          required: !0
+        },
+        void 0,
+        !1,
+        {
+          fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+          lineNumber: 59,
+          columnNumber: 13
+        },
+        this
+      ) }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 58,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, !0, {
+      fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+      lineNumber: 56,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Label, { htmlFor: "debt_serie_id", children: "Debt Serie" }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 69,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { className: "mt-1", children: debt_serie_id && /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(
+        import_flowbite_react11.Select,
+        {
+          id: "debt_serie_id",
+          name: "debt_serie_id",
+          defaultValue: debt_serie_id,
+          children: debt_series == null ? void 0 : debt_series.map((debt_serie) => {
+            let { id, name } = debt_serie;
+            return /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("option", { value: id, children: name }, id, !1, {
+              fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+              lineNumber: 80,
+              columnNumber: 21
+            }, this);
+          })
+        },
+        void 0,
+        !1,
+        {
+          fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+          lineNumber: 72,
+          columnNumber: 15
+        },
+        this
+      ) }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 70,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, !0, {
+      fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+      lineNumber: 68,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Label, { htmlFor: "oa_id", children: "OA" }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 90,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { className: "mt-1", children: oa_id && /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Select, { id: "oa_id", name: "oa_id", defaultValue: oa_id, children: oas == null ? void 0 : oas.map((oa) => {
+        let { id, name } = oa;
+        return /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("option", { value: id, children: name }, id, !1, {
+          fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+          lineNumber: 97,
+          columnNumber: 21
+        }, this);
+      }) }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 93,
+        columnNumber: 15
+      }, this) }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 91,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, !0, {
+      fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+      lineNumber: 89,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Label, { htmlFor: "customer_id", children: "Customer" }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 107,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("div", { className: "mt-1", children: customer_id && /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(
+        import_flowbite_react11.Select,
+        {
+          id: "customer_id",
+          name: "customer_id",
+          defaultValue: customer_id,
+          children: customers == null ? void 0 : customers.map((customer) => {
+            let { id, first_name, last_name, national_id } = customer;
+            return /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("option", { value: id, children: [
+              first_name,
+              " ",
+              last_name,
+              " (",
+              national_id,
+              ")"
+            ] }, id, !0, {
+              fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+              lineNumber: 118,
+              columnNumber: 21
+            }, this);
+          })
+        },
+        void 0,
+        !1,
+        {
+          fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+          lineNumber: 110,
+          columnNumber: 15
+        },
+        this
+      ) }, void 0, !1, {
+        fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+        lineNumber: 108,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, !0, {
+      fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+      lineNumber: 106,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, !0, {
+    fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+    lineNumber: 31,
+    columnNumber: 7
+  }, this) }, void 0, !1, {
+    fileName: "app/components/modal-body/contract/UpdateModalBody/index.tsx",
+    lineNumber: 30,
+    columnNumber: 5
+  }, this);
+}, UpdateModalBody_default = UpdateModalBody;
+
 // app/routes/contracts.tsx
-var import_jsx_dev_runtime11 = require("react/jsx-dev-runtime"), ITEMS_PER_PAGE = 10;
+var import_jsx_dev_runtime15 = require("react/jsx-dev-runtime"), ITEMS_PER_PAGE = 10;
 async function loader2({ request }) {
-  let { searchParams } = new URL(request.url), pageParams = Number(searchParams.get("page") || 0), search = searchParams.get("search"), modal = searchParams.get("modal-type"), page = pageParams === 0 ? pageParams : pageParams - 1, from = page * ITEMS_PER_PAGE, to = from + ITEMS_PER_PAGE - 1;
+  let { searchParams } = new URL(request.url), pageParams = Number(searchParams.get("page") || 0), contractId = Number(searchParams.get("contractId")), search = searchParams.get("search"), modal = searchParams.get("modal-type"), page = pageParams === 0 ? pageParams : pageParams - 1, from = page * ITEMS_PER_PAGE, to = from + ITEMS_PER_PAGE - 1, { debt_series, oas, customers } = await getOptionListItems(), { data: contract } = await getContractByContractNo(contractId);
   if (search) {
     let {
       data: contracts2,
       count: count2,
       error: error2
     } = await searchContract({ search, from, to });
-    return console.log({ contracts: contracts2 }), error2 ? new Response("Could not load data", { status: 500 }) : (0, import_node3.json)({
+    return error2 ? new Response("Could not load data", { status: 500 }) : (0, import_node3.json)({
       search,
+      contract,
       contracts: contracts2,
+      debt_series,
+      oas,
+      customers,
       totalPage: Math.ceil(count2 / ITEMS_PER_PAGE),
       currentPage: page + 1,
       modal
@@ -2929,58 +3481,102 @@ async function loader2({ request }) {
   } = await getContractListItems({ from, to });
   return error ? new Response("Could not load data", { status: 500 }) : (0, import_node3.json)({
     search: "",
+    contract,
     contracts,
+    debt_series,
+    oas,
+    customers,
     totalPage: Math.ceil(count / ITEMS_PER_PAGE),
     currentPage: page + 1,
     modal
   });
 }
 async function action({ request }) {
-  let { searchParams } = new URL(request.url), modal = searchParams.get("modal-type"), contractNo = searchParams.get("contract");
-  return modal === "delete" && contractNo ? (await deleteContract(contractNo), (0, import_node3.redirect)("#")) : null;
+  let { searchParams } = new URL(request.url), modal = searchParams.get("modal-type"), contractId = Number(searchParams.get("contractId")), formData = await request.formData(), {
+    contract_no,
+    os_balance,
+    financial_institution,
+    debt_serie_id,
+    oa_id,
+    customer_id
+  } = Object.fromEntries(formData);
+  if (modal === "delete" && contractId)
+    return await deleteContract(contractId), (0, import_node3.redirect)("#");
+  if (contract_no && os_balance && financial_institution && debt_serie_id && oa_id && customer_id) {
+    if (modal === "add")
+      return await createContract({
+        contract_no: String(contract_no),
+        financial_institution: String(financial_institution),
+        os_balance: Number(os_balance),
+        debt_serie_id: Number(debt_serie_id),
+        oa_id: Number(oa_id),
+        customer_id: Number(customer_id)
+      }), (0, import_node3.redirect)("#");
+    if (modal === "edit")
+      return await updateContract({
+        contractId,
+        contract_no: String(contract_no),
+        financial_institution: String(financial_institution),
+        os_balance: Number(os_balance),
+        debt_serie_id: Number(debt_serie_id),
+        oa_id: Number(oa_id),
+        customer_id: Number(customer_id)
+      }), (0, import_node3.redirect)("#");
+  }
+  return null;
 }
 function ContractPage() {
-  let { search, contracts, totalPage, currentPage, modal } = (0, import_react11.useLoaderData)(), hasSearch = search && `search=${search}&`;
-  return /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(MainLayout_default, { isFooter: !1, children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)("div", { className: "space-y-4 bg-white p-4 shadow dark:bg-gray-800 sm:p-6", children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)("h2", { className: "text-4xl font-bold text-gray-900 dark:text-white", children: "All Contracts" }, void 0, !1, {
+  let {
+    search,
+    contract,
+    contracts,
+    totalPage,
+    currentPage,
+    modal,
+    debt_series,
+    oas,
+    customers
+  } = (0, import_react13.useLoaderData)(), hasSearch = search && `search=${search}&`;
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(MainLayout_default, { isFooter: !1, children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "space-y-4 bg-white p-4 shadow dark:bg-gray-800 sm:p-6", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("h2", { className: "text-4xl font-bold text-gray-900 dark:text-white", children: "All Contracts" }, void 0, !1, {
         fileName: "app/routes/contracts.tsx",
-        lineNumber: 93,
+        lineNumber: 162,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)("div", { className: "flex items-center justify-between", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(Search_default, { className: "w-1/2", defaultValue: search }, void 0, !1, {
+      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(Search_default, { className: "w-1/2", defaultValue: search }, void 0, !1, {
           fileName: "app/routes/contracts.tsx",
-          lineNumber: 97,
+          lineNumber: 166,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_react11.Link, { to: "#", children: /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_flowbite_react8.Button, { color: "success", children: /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
-          /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(import_hi6.HiPlus, { className: "text-lg" }, void 0, !1, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_react13.Link, { to: "?modal-type=add", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Button, { color: "success", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
+          /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_hi8.HiPlus, { className: "text-lg" }, void 0, !1, {
             fileName: "app/routes/contracts.tsx",
-            lineNumber: 101,
+            lineNumber: 170,
             columnNumber: 17
           }, this),
           "Add Contracts"
         ] }, void 0, !0, {
           fileName: "app/routes/contracts.tsx",
-          lineNumber: 100,
+          lineNumber: 169,
           columnNumber: 15
         }, this) }, void 0, !1, {
           fileName: "app/routes/contracts.tsx",
-          lineNumber: 99,
+          lineNumber: 168,
           columnNumber: 13
         }, this) }, void 0, !1, {
           fileName: "app/routes/contracts.tsx",
-          lineNumber: 98,
+          lineNumber: 167,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/contracts.tsx",
-        lineNumber: 96,
+        lineNumber: 165,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)("div", { className: "flex flex-col", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(
+      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "flex flex-col", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
           Pagination_default,
           {
             totalPage,
@@ -2992,34 +3588,97 @@ function ContractPage() {
           !1,
           {
             fileName: "app/routes/contracts.tsx",
-            lineNumber: 108,
+            lineNumber: 177,
             columnNumber: 11
           },
           this
         ),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(ContractsTable_default, { contracts, currentPage }, void 0, !1, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(ContractsTable_default, { contracts, currentPage }, void 0, !1, {
           fileName: "app/routes/contracts.tsx",
-          lineNumber: 122,
+          lineNumber: 191,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/contracts.tsx",
-        lineNumber: 107,
+        lineNumber: 176,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/contracts.tsx",
-      lineNumber: 92,
+      lineNumber: 161,
       columnNumber: 7
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime11.jsxDEV)(DeleteModal_default, { visible: modal === "delete" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(DeleteModal_default, { visible: modal === "delete" }, void 0, !1, {
       fileName: "app/routes/contracts.tsx",
-      lineNumber: 125,
+      lineNumber: 194,
       columnNumber: 7
-    }, this)
+    }, this),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
+      AddModal_default,
+      {
+        title: "Add new contract",
+        visible: modal === "add",
+        body: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
+          AddModalBody_default,
+          {
+            debt_series,
+            oas,
+            customers
+          },
+          void 0,
+          !1,
+          {
+            fileName: "app/routes/contracts.tsx",
+            lineNumber: 199,
+            columnNumber: 11
+          },
+          this
+        )
+      },
+      void 0,
+      !1,
+      {
+        fileName: "app/routes/contracts.tsx",
+        lineNumber: 195,
+        columnNumber: 7
+      },
+      this
+    ),
+    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
+      UpdateItemModal_default,
+      {
+        title: "Edit contract",
+        visible: modal === "edit",
+        body: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
+          UpdateModalBody_default,
+          {
+            debt_series,
+            oas,
+            customers,
+            contract
+          },
+          void 0,
+          !1,
+          {
+            fileName: "app/routes/contracts.tsx",
+            lineNumber: 210,
+            columnNumber: 11
+          },
+          this
+        )
+      },
+      void 0,
+      !1,
+      {
+        fileName: "app/routes/contracts.tsx",
+        lineNumber: 206,
+        columnNumber: 7
+      },
+      this
+    )
   ] }, void 0, !0, {
     fileName: "app/routes/contracts.tsx",
-    lineNumber: 91,
+    lineNumber: 160,
     columnNumber: 5
   }, this);
 }
@@ -3034,42 +3693,42 @@ __export(customers_exports, {
 var import_node4 = require("@remix-run/node"), import_react15 = require("@remix-run/react");
 
 // app/components/tables/CustomersTable/index.tsx
-var import_flowbite_react9 = require("flowbite-react"), import_hi7 = require("react-icons/hi"), import_react12 = require("@remix-run/react"), import_jsx_dev_runtime12 = require("react/jsx-dev-runtime"), CustomersTable = ({
+var import_flowbite_react13 = require("flowbite-react"), import_hi9 = require("react-icons/hi"), import_react14 = require("@remix-run/react"), import_jsx_dev_runtime16 = require("react/jsx-dev-runtime"), CustomersTable = ({
   currentPage,
   customers
-}) => /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table, { className: "min-w-full divide-y divide-gray-200 dark:divide-gray-600", children: [
-  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Head, { className: "bg-gray-100 dark:bg-gray-700", children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.HeadCell, { children: "#" }, void 0, !1, {
+}) => /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table, { className: "min-w-full divide-y divide-gray-200 dark:divide-gray-600", children: [
+  /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Head, { className: "bg-gray-100 dark:bg-gray-700", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.HeadCell, { children: "#" }, void 0, !1, {
       fileName: "app/components/tables/CustomersTable/index.tsx",
       lineNumber: 19,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.HeadCell, { children: "Name" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.HeadCell, { children: "Name" }, void 0, !1, {
       fileName: "app/components/tables/CustomersTable/index.tsx",
       lineNumber: 20,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.HeadCell, { children: "Position" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.HeadCell, { children: "Position" }, void 0, !1, {
       fileName: "app/components/tables/CustomersTable/index.tsx",
       lineNumber: 21,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.HeadCell, { children: "Salary" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.HeadCell, { children: "Salary" }, void 0, !1, {
       fileName: "app/components/tables/CustomersTable/index.tsx",
       lineNumber: 22,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.HeadCell, { children: "Address" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.HeadCell, { children: "Address" }, void 0, !1, {
       fileName: "app/components/tables/CustomersTable/index.tsx",
       lineNumber: 23,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.HeadCell, { children: "Tel" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.HeadCell, { children: "Tel" }, void 0, !1, {
       fileName: "app/components/tables/CustomersTable/index.tsx",
       lineNumber: 24,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.HeadCell, { children: "Action" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.HeadCell, { children: "Action" }, void 0, !1, {
       fileName: "app/components/tables/CustomersTable/index.tsx",
       lineNumber: 25,
       columnNumber: 9
@@ -3079,7 +3738,7 @@ var import_flowbite_react9 = require("flowbite-react"), import_hi7 = require("re
     lineNumber: 18,
     columnNumber: 7
   }, this),
-  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Body, { className: "divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800", children: customers == null ? void 0 : customers.map((customer) => {
+  /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Body, { className: "divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800", children: customers == null ? void 0 : customers.map((customer) => {
     let {
       id,
       first_name,
@@ -3090,18 +3749,18 @@ var import_flowbite_react9 = require("flowbite-react"), import_hi7 = require("re
       address_details,
       tel_no
     } = customer;
-    return /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(
-      import_flowbite_react9.Table.Row,
+    return /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
+      import_flowbite_react13.Table.Row,
       {
         className: "hover:bg-gray-100 dark:hover:bg-gray-700",
         children: [
-          /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Cell, { className: "text-base font-semibold text-gray-900 dark:text-white", children: id }, void 0, !1, {
+          /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Cell, { className: "text-base font-semibold text-gray-900 dark:text-white", children: id }, void 0, !1, {
             fileName: "app/components/tables/CustomersTable/index.tsx",
             lineNumber: 44,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Cell, { className: "flex flex-col", children: [
-            /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("p", { className: "text-base font-semibold text-gray-900 dark:text-white", children: [
+          /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Cell, { className: "flex flex-col", children: [
+            /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("p", { className: "text-base font-semibold text-gray-900 dark:text-white", children: [
               first_name,
               " ",
               last_name
@@ -3110,7 +3769,7 @@ var import_flowbite_react9 = require("flowbite-react"), import_hi7 = require("re
               lineNumber: 48,
               columnNumber: 17
             }, this),
-            /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("p", { className: "text-sm font-normal text-gray-500 dark:text-gray-400", children: national_id }, void 0, !1, {
+            /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("p", { className: "text-sm font-normal text-gray-500 dark:text-gray-400", children: national_id }, void 0, !1, {
               fileName: "app/components/tables/CustomersTable/index.tsx",
               lineNumber: 51,
               columnNumber: 17
@@ -3120,33 +3779,33 @@ var import_flowbite_react9 = require("flowbite-react"), import_hi7 = require("re
             lineNumber: 47,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: occupation_types == null ? void 0 : occupation_types.name }, void 0, !1, {
+          /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: occupation_types == null ? void 0 : occupation_types.name }, void 0, !1, {
             fileName: "app/components/tables/CustomersTable/index.tsx",
             lineNumber: 55,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: salary }, void 0, !1, {
+          /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: salary }, void 0, !1, {
             fileName: "app/components/tables/CustomersTable/index.tsx",
             lineNumber: 58,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: address_details }, void 0, !1, {
+          /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: address_details }, void 0, !1, {
             fileName: "app/components/tables/CustomersTable/index.tsx",
             lineNumber: 61,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: tel_no }, void 0, !1, {
+          /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: tel_no }, void 0, !1, {
             fileName: "app/components/tables/CustomersTable/index.tsx",
             lineNumber: 64,
             columnNumber: 15
           }, this),
-          /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "flex items-center space-x-4", children: [
-            /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(
-              import_react12.Link,
+          /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Table.Cell, { className: "text-base text-gray-900 dark:text-white", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "flex items-center space-x-4", children: [
+            /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
+              import_react14.Link,
               {
                 to: `?page=${currentPage}&customerId=${id}&modal-type=edit`,
-                children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Button, { color: "info", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_hi7.HiOutlinePencilAlt, { className: "text-lg" }, void 0, !1, {
+                children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Button, { color: "info", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_hi9.HiOutlinePencilAlt, { className: "text-lg" }, void 0, !1, {
                     fileName: "app/components/tables/CustomersTable/index.tsx",
                     lineNumber: 74,
                     columnNumber: 25
@@ -3171,12 +3830,12 @@ var import_flowbite_react9 = require("flowbite-react"), import_hi7 = require("re
               },
               this
             ),
-            /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(
-              import_react12.Link,
+            /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
+              import_react14.Link,
               {
                 to: `?page=${currentPage}&customerId=${id}&modal-type=delete`,
-                children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_flowbite_react9.Button, { color: "failure", children: /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_dev_runtime12.jsxDEV)(import_hi7.HiTrash, { className: "text-lg" }, void 0, !1, {
+                children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Button, { color: "failure", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_hi9.HiTrash, { className: "text-lg" }, void 0, !1, {
                     fileName: "app/components/tables/CustomersTable/index.tsx",
                     lineNumber: 84,
                     columnNumber: 25
@@ -3267,105 +3926,17 @@ async function getPositionListItems() {
 // app/routes/customers.tsx
 var import_hi10 = require("react-icons/hi");
 
-// app/components/modals/AddModal/index.tsx
-var import_flowbite_react10 = require("flowbite-react"), import_hi8 = require("react-icons/hi"), import_react13 = require("@remix-run/react"), import_jsx_dev_runtime13 = require("react/jsx-dev-runtime"), AddModal = ({ title, visible, body }) => {
-  let navigate = (0, import_react13.useNavigate)();
-  return /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Modal, { onClose: () => navigate("#"), show: visible, children: /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)("form", { method: "POST", children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Modal.Header, { className: "border-b border-gray-200 !p-6 dark:border-gray-700", children: /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)("strong", { children: title }, void 0, !1, {
-      fileName: "app/components/modals/AddModal/index.tsx",
-      lineNumber: 18,
-      columnNumber: 11
-    }, this) }, void 0, !1, {
-      fileName: "app/components/modals/AddModal/index.tsx",
-      lineNumber: 17,
-      columnNumber: 9
-    }, this),
-    body,
-    /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Modal.Footer, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_flowbite_react10.Button, { color: "success", type: "submit", className: "px-1", children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime13.jsxDEV)(import_hi8.HiPlus, { className: "mr-1" }, void 0, !1, {
-        fileName: "app/components/modals/AddModal/index.tsx",
-        lineNumber: 23,
-        columnNumber: 13
-      }, this),
-      "Add"
-    ] }, void 0, !0, {
-      fileName: "app/components/modals/AddModal/index.tsx",
-      lineNumber: 22,
-      columnNumber: 11
-    }, this) }, void 0, !1, {
-      fileName: "app/components/modals/AddModal/index.tsx",
-      lineNumber: 21,
-      columnNumber: 9
-    }, this)
-  ] }, void 0, !0, {
-    fileName: "app/components/modals/AddModal/index.tsx",
-    lineNumber: 16,
-    columnNumber: 7
-  }, this) }, void 0, !1, {
-    fileName: "app/components/modals/AddModal/index.tsx",
-    lineNumber: 15,
-    columnNumber: 5
-  }, this);
-}, AddModal_default = AddModal;
-
-// app/components/modals/UpdateItemModal/index.tsx
-var import_flowbite_react11 = require("flowbite-react"), import_hi9 = require("react-icons/hi"), import_react14 = require("@remix-run/react"), import_jsx_dev_runtime14 = require("react/jsx-dev-runtime"), UpdateItemModal = ({
-  title,
-  visible,
-  body
-}) => {
-  let navigate = (0, import_react14.useNavigate)();
-  return /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Modal, { onClose: () => navigate("#"), show: visible, children: /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("form", { method: "POST", children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Modal.Header, { className: "border-b border-gray-200 !p-6 dark:border-gray-700", children: /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)("strong", { children: title }, void 0, !1, {
-      fileName: "app/components/modals/UpdateItemModal/index.tsx",
-      lineNumber: 22,
-      columnNumber: 11
-    }, this) }, void 0, !1, {
-      fileName: "app/components/modals/UpdateItemModal/index.tsx",
-      lineNumber: 21,
-      columnNumber: 9
-    }, this),
-    body,
-    /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Modal.Footer, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_flowbite_react11.Button, { color: "warning", type: "submit", className: "px-1", children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime14.jsxDEV)(import_hi9.HiOutlinePencilAlt, { className: "mr-1" }, void 0, !1, {
-        fileName: "app/components/modals/UpdateItemModal/index.tsx",
-        lineNumber: 27,
-        columnNumber: 13
-      }, this),
-      "Update"
-    ] }, void 0, !0, {
-      fileName: "app/components/modals/UpdateItemModal/index.tsx",
-      lineNumber: 26,
-      columnNumber: 11
-    }, this) }, void 0, !1, {
-      fileName: "app/components/modals/UpdateItemModal/index.tsx",
-      lineNumber: 25,
-      columnNumber: 9
-    }, this)
-  ] }, void 0, !0, {
-    fileName: "app/components/modals/UpdateItemModal/index.tsx",
-    lineNumber: 20,
-    columnNumber: 7
-  }, this) }, void 0, !1, {
-    fileName: "app/components/modals/UpdateItemModal/index.tsx",
-    lineNumber: 19,
-    columnNumber: 5
-  }, this);
-}, UpdateItemModal_default = UpdateItemModal;
-
-// app/components/body-modals/AddCustomerModalBody/index.tsx
-var import_flowbite_react12 = require("flowbite-react"), import_jsx_dev_runtime15 = require("react/jsx-dev-runtime"), AddCustomerModalBody = ({
-  positions
-}) => /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Modal.Body, { children: [
-  /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2", children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Label, { htmlFor: "first_name", children: "First name" }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 17,
+// app/components/modal-body/customer/AddModalBody/index.tsx
+var import_flowbite_react14 = require("flowbite-react"), import_jsx_dev_runtime17 = require("react/jsx-dev-runtime"), AddModalBody2 = ({ positions }) => /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Modal.Body, { children: [
+  /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Label, { htmlFor: "first_name", children: "First name" }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 15,
         columnNumber: 11
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
-        import_flowbite_react12.TextInput,
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+        import_flowbite_react14.TextInput,
         {
           id: "first_name",
           name: "first_name",
@@ -3375,29 +3946,29 @@ var import_flowbite_react12 = require("flowbite-react"), import_jsx_dev_runtime1
         void 0,
         !1,
         {
-          fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-          lineNumber: 19,
+          fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+          lineNumber: 17,
           columnNumber: 13
         },
         this
       ) }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 18,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 16,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 16,
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 14,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Label, { htmlFor: "last_name", children: "Last name" }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 28,
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Label, { htmlFor: "last_name", children: "Last name" }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 26,
         columnNumber: 11
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
-        import_flowbite_react12.TextInput,
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+        import_flowbite_react14.TextInput,
         {
           id: "last_name",
           name: "last_name",
@@ -3407,29 +3978,29 @@ var import_flowbite_react12 = require("flowbite-react"), import_jsx_dev_runtime1
         void 0,
         !1,
         {
-          fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-          lineNumber: 30,
+          fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+          lineNumber: 28,
           columnNumber: 13
         },
         this
       ) }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 29,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 27,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 27,
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 25,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Label, { htmlFor: "national_id", children: "National ID" }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 39,
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Label, { htmlFor: "national_id", children: "National ID" }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 37,
         columnNumber: 11
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
-        import_flowbite_react12.TextInput,
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+        import_flowbite_react14.TextInput,
         {
           id: "national_id",
           name: "national_id",
@@ -3439,76 +4010,76 @@ var import_flowbite_react12 = require("flowbite-react"), import_jsx_dev_runtime1
         void 0,
         !1,
         {
-          fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-          lineNumber: 41,
+          fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+          lineNumber: 39,
           columnNumber: 13
         },
         this
       ) }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 40,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 38,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 38,
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 36,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Label, { htmlFor: "position", children: "Position" }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 50,
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Label, { htmlFor: "position", children: "Position" }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 48,
         columnNumber: 11
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Select, { id: "position", name: "position", children: positions == null ? void 0 : positions.map((position) => {
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Select, { id: "position", name: "position", children: positions == null ? void 0 : positions.map((position) => {
         let { id, name } = position;
-        return /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("option", { value: id, children: name }, id, !1, {
-          fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-          lineNumber: 56,
+        return /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("option", { value: id, children: name }, id, !1, {
+          fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+          lineNumber: 54,
           columnNumber: 19
         }, this);
       }) }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 52,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 50,
         columnNumber: 13
       }, this) }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 51,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 49,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 49,
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 47,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Label, { htmlFor: "salary", children: "Salary" }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Label, { htmlFor: "salary", children: "Salary" }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 63,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.TextInput, { id: "salary", name: "salary", placeholder: "18000", required: !0 }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
         lineNumber: 65,
-        columnNumber: 11
-      }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.TextInput, { id: "salary", name: "salary", placeholder: "18000", required: !0 }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 67,
         columnNumber: 13
       }, this) }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 66,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 64,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 64,
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 62,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Label, { htmlFor: "tel_no", children: "Tel" }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 71,
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Label, { htmlFor: "tel_no", children: "Tel" }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 69,
         columnNumber: 11
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
-        import_flowbite_react12.TextInput,
+      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+        import_flowbite_react14.TextInput,
         {
           id: "tel_no",
           name: "tel_no",
@@ -3518,34 +4089,34 @@ var import_flowbite_react12 = require("flowbite-react"), import_jsx_dev_runtime1
         void 0,
         !1,
         {
-          fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-          lineNumber: 73,
+          fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+          lineNumber: 71,
           columnNumber: 13
         },
         this
       ) }, void 0, !1, {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 72,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 70,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 70,
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 68,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
-    fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-    lineNumber: 15,
+    fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+    lineNumber: 13,
     columnNumber: 7
   }, this),
-  /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-6", children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(import_flowbite_react12.Label, { htmlFor: "address_details", children: "Address" }, void 0, !1, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 83,
+  /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-6", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Label, { htmlFor: "address_details", children: "Address" }, void 0, !1, {
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 81,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime15.jsxDEV)(
-      import_flowbite_react12.Textarea,
+    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+      import_flowbite_react14.Textarea,
       {
         id: "address_details",
         name: "address_details",
@@ -3556,29 +4127,29 @@ var import_flowbite_react12 = require("flowbite-react"), import_jsx_dev_runtime1
       void 0,
       !1,
       {
-        fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-        lineNumber: 85,
+        fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+        lineNumber: 83,
         columnNumber: 11
       },
       this
     ) }, void 0, !1, {
-      fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-      lineNumber: 84,
+      fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+      lineNumber: 82,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
-    fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-    lineNumber: 82,
+    fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+    lineNumber: 80,
     columnNumber: 7
   }, this)
 ] }, void 0, !0, {
-  fileName: "app/components/body-modals/AddCustomerModalBody/index.tsx",
-  lineNumber: 14,
+  fileName: "app/components/modal-body/customer/AddModalBody/index.tsx",
+  lineNumber: 12,
   columnNumber: 5
-}, this), AddCustomerModalBody_default = AddCustomerModalBody;
+}, this), AddModalBody_default2 = AddModalBody2;
 
-// app/components/body-modals/UpdateCustomerModalBody/index.tsx
-var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime16 = require("react/jsx-dev-runtime"), UpdateCustomerModalBody = ({
+// app/components/modal-body/customer/UpdateModalBody/index.tsx
+var import_flowbite_react15 = require("flowbite-react"), import_jsx_dev_runtime18 = require("react/jsx-dev-runtime"), UpdateModalBody2 = ({
   positions,
   customer
 }) => {
@@ -3591,16 +4162,16 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
     tel_no,
     address_details
   } = customer || {};
-  return /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Modal.Body, { children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2", children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Label, { htmlFor: "first_name", children: "First name" }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Modal.Body, { children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Label, { htmlFor: "first_name", children: "First name" }, void 0, !1, {
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 37,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
-          import_flowbite_react13.TextInput,
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(
+          import_flowbite_react15.TextInput,
           {
             id: "first_name",
             name: "first_name",
@@ -3611,29 +4182,29 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
           void 0,
           !1,
           {
-            fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+            fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
             lineNumber: 39,
             columnNumber: 13
           },
           this
         ) }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 38,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 36,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Label, { htmlFor: "last_name", children: "Last name" }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Label, { htmlFor: "last_name", children: "Last name" }, void 0, !1, {
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 49,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
-          import_flowbite_react13.TextInput,
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(
+          import_flowbite_react15.TextInput,
           {
             id: "last_name",
             name: "last_name",
@@ -3644,29 +4215,29 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
           void 0,
           !1,
           {
-            fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+            fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
             lineNumber: 51,
             columnNumber: 13
           },
           this
         ) }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 50,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 48,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Label, { htmlFor: "national_id", children: "National ID" }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Label, { htmlFor: "national_id", children: "National ID" }, void 0, !1, {
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 61,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
-          import_flowbite_react13.TextInput,
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(
+          import_flowbite_react15.TextInput,
           {
             id: "national_id",
             name: "national_id",
@@ -3677,37 +4248,37 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
           void 0,
           !1,
           {
-            fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+            fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
             lineNumber: 63,
             columnNumber: 13
           },
           this
         ) }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 62,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 60,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Label, { htmlFor: "position", children: "Position" }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Label, { htmlFor: "position", children: "Position" }, void 0, !1, {
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 73,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-1", children: occupation_types_id && /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
-          import_flowbite_react13.Select,
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-1", children: occupation_types_id && /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(
+          import_flowbite_react15.Select,
           {
             id: "position",
             name: "position",
             defaultValue: occupation_types_id,
             children: positions == null ? void 0 : positions.map((position) => {
               let { id, name } = position;
-              return /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("option", { value: id, children: name }, id, !1, {
-                fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+              return /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("option", { value: id, children: name }, id, !1, {
+                fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
                 lineNumber: 84,
                 columnNumber: 21
               }, this);
@@ -3716,29 +4287,29 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
           void 0,
           !1,
           {
-            fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+            fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
             lineNumber: 76,
             columnNumber: 15
           },
           this
         ) }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 74,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 72,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Label, { htmlFor: "salary", children: "Salary" }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Label, { htmlFor: "salary", children: "Salary" }, void 0, !1, {
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 94,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
-          import_flowbite_react13.TextInput,
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(
+          import_flowbite_react15.TextInput,
           {
             id: "salary",
             name: "salary",
@@ -3749,29 +4320,29 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
           void 0,
           !1,
           {
-            fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+            fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
             lineNumber: 96,
             columnNumber: 13
           },
           this
         ) }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 95,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 93,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Label, { htmlFor: "tel_no", children: "Tel" }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Label, { htmlFor: "tel_no", children: "Tel" }, void 0, !1, {
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 106,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
-          import_flowbite_react13.TextInput,
+        /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(
+          import_flowbite_react15.TextInput,
           {
             id: "tel_no",
             name: "tel_no",
@@ -3782,34 +4353,34 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
           void 0,
           !1,
           {
-            fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+            fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
             lineNumber: 108,
             columnNumber: 13
           },
           this
         ) }, void 0, !1, {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 107,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 105,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+      fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
       lineNumber: 35,
       columnNumber: 7
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-6", children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(import_flowbite_react13.Label, { htmlFor: "address_details", children: "Address" }, void 0, !1, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+    /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-6", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(import_flowbite_react15.Label, { htmlFor: "address_details", children: "Address" }, void 0, !1, {
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 119,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime16.jsxDEV)(
-        import_flowbite_react13.Textarea,
+      /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(
+        import_flowbite_react15.Textarea,
         {
           id: "address_details",
           name: "address_details",
@@ -3821,30 +4392,30 @@ var import_flowbite_react13 = require("flowbite-react"), import_jsx_dev_runtime1
         void 0,
         !1,
         {
-          fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+          fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
           lineNumber: 121,
           columnNumber: 11
         },
         this
       ) }, void 0, !1, {
-        fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+        fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
         lineNumber: 120,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
-      fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+      fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
       lineNumber: 118,
       columnNumber: 7
     }, this)
   ] }, void 0, !0, {
-    fileName: "app/components/body-modals/UpdateCustomerModalBody/index.tsx",
+    fileName: "app/components/modal-body/customer/UpdateModalBody/index.tsx",
     lineNumber: 34,
     columnNumber: 5
   }, this);
-}, UpdateCustomerModalBody_default = UpdateCustomerModalBody;
+}, UpdateModalBody_default2 = UpdateModalBody2;
 
 // app/routes/customers.tsx
-var import_flowbite_react14 = require("flowbite-react"), import_jsx_dev_runtime17 = require("react/jsx-dev-runtime"), ITEMS_PER_PAGE2 = 10;
+var import_flowbite_react16 = require("flowbite-react"), import_jsx_dev_runtime19 = require("react/jsx-dev-runtime"), ITEMS_PER_PAGE2 = 10;
 async function loader3({ request }) {
   let { searchParams } = new URL(request.url), pageParams = Number(searchParams.get("page") || 0), customerId = Number(searchParams.get("customerId")), search = searchParams.get("search"), modal = searchParams.get("modal-type"), page = pageParams === 0 ? pageParams : pageParams - 1, from = page * ITEMS_PER_PAGE2, to = from + ITEMS_PER_PAGE2 - 1, { data: positions } = await getPositionListItems(), { data: customer } = await getCustomerById(customerId);
   if (search) {
@@ -3888,24 +4459,32 @@ async function action2({ request }) {
     address_details,
     tel_no
   } = Object.fromEntries(formData);
-  return modal === "delete" && customerId ? (await deleteCustomer(customerId), (0, import_node4.redirect)("#")) : modal === "add" && first_name && last_name && national_id && position && salary && address_details && tel_no ? (await createCustomer({
-    first_name: String(first_name),
-    last_name: String(last_name),
-    national_id: Number(national_id),
-    position: Number(position),
-    salary: Number(salary),
-    address_details: String(address_details),
-    tel_no: String(tel_no)
-  }), (0, import_node4.redirect)("#")) : modal === "edit" && first_name && last_name && national_id && position && salary && address_details && tel_no ? (await updateCustomer({
-    customerId,
-    first_name: String(first_name),
-    last_name: String(last_name),
-    national_id: Number(national_id),
-    position: Number(position),
-    salary: Number(salary),
-    address_details: String(address_details),
-    tel_no: String(tel_no)
-  }), (0, import_node4.redirect)("#")) : null;
+  if (modal === "delete" && customerId)
+    return await deleteCustomer(customerId), (0, import_node4.redirect)("#");
+  if (first_name && last_name && national_id && position && salary && address_details && tel_no) {
+    if (modal === "add")
+      return await createCustomer({
+        first_name: String(first_name),
+        last_name: String(last_name),
+        national_id: Number(national_id),
+        position: Number(position),
+        salary: Number(salary),
+        address_details: String(address_details),
+        tel_no: String(tel_no)
+      }), (0, import_node4.redirect)("#");
+    if (modal === "edit")
+      return await updateCustomer({
+        customerId,
+        first_name: String(first_name),
+        last_name: String(last_name),
+        national_id: Number(national_id),
+        position: Number(position),
+        salary: Number(salary),
+        address_details: String(address_details),
+        tel_no: String(tel_no)
+      }), (0, import_node4.redirect)("#");
+  }
+  return null;
 }
 function CustomerPage() {
   let {
@@ -3917,46 +4496,46 @@ function CustomerPage() {
     currentPage,
     modal
   } = (0, import_react15.useLoaderData)(), hasSearch = search && `search=${search}&`;
-  return /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(MainLayout_default, { isFooter: !1, children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "space-y-4 bg-white p-4 shadow dark:bg-gray-800 sm:p-6", children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("h2", { className: "text-4xl font-bold text-gray-900 dark:text-white", children: "All Customers" }, void 0, !1, {
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(MainLayout_default, { isFooter: !1, children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "space-y-4 bg-white p-4 shadow dark:bg-gray-800 sm:p-6", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("h2", { className: "text-4xl font-bold text-gray-900 dark:text-white", children: "All Customers" }, void 0, !1, {
         fileName: "app/routes/customers.tsx",
-        lineNumber: 174,
+        lineNumber: 164,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "flex items-center justify-between", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(Search_default, { className: "w-1/2", defaultValue: search }, void 0, !1, {
+      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(Search_default, { className: "w-1/2", defaultValue: search }, void 0, !1, {
           fileName: "app/routes/customers.tsx",
-          lineNumber: 178,
+          lineNumber: 168,
           columnNumber: 11
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_react15.Link, { to: "?modal-type=add", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_flowbite_react14.Button, { color: "success", children: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
-          /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(import_hi10.HiPlus, { className: "text-lg" }, void 0, !1, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(import_react15.Link, { to: "?modal-type=add", children: /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(import_flowbite_react16.Button, { color: "success", children: /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "flex items-center gap-x-2", children: [
+          /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(import_hi10.HiPlus, { className: "text-lg" }, void 0, !1, {
             fileName: "app/routes/customers.tsx",
-            lineNumber: 182,
+            lineNumber: 172,
             columnNumber: 17
           }, this),
           "Add Customer"
         ] }, void 0, !0, {
           fileName: "app/routes/customers.tsx",
-          lineNumber: 181,
+          lineNumber: 171,
           columnNumber: 15
         }, this) }, void 0, !1, {
           fileName: "app/routes/customers.tsx",
-          lineNumber: 180,
+          lineNumber: 170,
           columnNumber: 13
         }, this) }, void 0, !1, {
           fileName: "app/routes/customers.tsx",
-          lineNumber: 179,
+          lineNumber: 169,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/customers.tsx",
-        lineNumber: 177,
+        lineNumber: 167,
         columnNumber: 9
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)("div", { className: "flex flex-col", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "flex flex-col", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
           Pagination_default,
           {
             totalPage,
@@ -3968,39 +4547,39 @@ function CustomerPage() {
           !1,
           {
             fileName: "app/routes/customers.tsx",
-            lineNumber: 189,
+            lineNumber: 179,
             columnNumber: 11
           },
           this
         ),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(CustomersTable_default, { customers, currentPage }, void 0, !1, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(CustomersTable_default, { customers, currentPage }, void 0, !1, {
           fileName: "app/routes/customers.tsx",
-          lineNumber: 203,
+          lineNumber: 193,
           columnNumber: 11
         }, this)
       ] }, void 0, !0, {
         fileName: "app/routes/customers.tsx",
-        lineNumber: 188,
+        lineNumber: 178,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/routes/customers.tsx",
-      lineNumber: 173,
+      lineNumber: 163,
       columnNumber: 7
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(DeleteModal_default, { visible: modal === "delete" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(DeleteModal_default, { visible: modal === "delete" }, void 0, !1, {
       fileName: "app/routes/customers.tsx",
-      lineNumber: 206,
+      lineNumber: 196,
       columnNumber: 7
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
       AddModal_default,
       {
         title: "Add new customer",
         visible: modal === "add",
-        body: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(AddCustomerModalBody_default, { positions }, void 0, !1, {
+        body: /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(AddModalBody_default2, { positions }, void 0, !1, {
           fileName: "app/routes/customers.tsx",
-          lineNumber: 210,
+          lineNumber: 200,
           columnNumber: 15
         }, this)
       },
@@ -4008,34 +4587,34 @@ function CustomerPage() {
       !1,
       {
         fileName: "app/routes/customers.tsx",
-        lineNumber: 207,
+        lineNumber: 197,
         columnNumber: 7
       },
       this
     ),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(
+    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
       UpdateItemModal_default,
       {
-        title: "Add new customer",
+        title: "Edit customer",
         visible: modal === "edit",
-        body: /* @__PURE__ */ (0, import_jsx_dev_runtime17.jsxDEV)(UpdateCustomerModalBody_default, { positions, customer }, void 0, !1, {
+        body: /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(UpdateModalBody_default2, { positions, customer }, void 0, !1, {
           fileName: "app/routes/customers.tsx",
-          lineNumber: 216,
-          columnNumber: 11
+          lineNumber: 205,
+          columnNumber: 15
         }, this)
       },
       void 0,
       !1,
       {
         fileName: "app/routes/customers.tsx",
-        lineNumber: 212,
+        lineNumber: 202,
         columnNumber: 7
       },
       this
     )
   ] }, void 0, !0, {
     fileName: "app/routes/customers.tsx",
-    lineNumber: 172,
+    lineNumber: 162,
     columnNumber: 5
   }, this);
 }
@@ -4046,12 +4625,12 @@ __export(index_exports, {
   default: () => IndexPage,
   loader: () => loader4
 });
-var import_node5 = require("@remix-run/node"), import_jsx_dev_runtime18 = require("react/jsx-dev-runtime");
+var import_node5 = require("@remix-run/node"), import_jsx_dev_runtime20 = require("react/jsx-dev-runtime");
 async function loader4({ request }) {
   return (0, import_node5.json)({});
 }
 function IndexPage() {
-  return /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)(MainLayout_default, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime18.jsxDEV)("div", { className: "px-4 pt-6", children: "Home" }, void 0, !1, {
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)(MainLayout_default, { children: /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("div", { className: "px-4 pt-6", children: "Home" }, void 0, !1, {
     fileName: "app/routes/_index.tsx",
     lineNumber: 13,
     columnNumber: 7
@@ -4083,7 +4662,7 @@ __export(login_exports, {
   meta: () => meta2
 });
 var import_react16 = require("react"), import_node7 = require("@remix-run/node"), import_react17 = require("@remix-run/react");
-var import_jsx_dev_runtime19 = require("react/jsx-dev-runtime"), meta2 = () => [
+var import_jsx_dev_runtime21 = require("react/jsx-dev-runtime"), meta2 = () => [
   {
     title: "Login"
   }
@@ -4122,15 +4701,15 @@ function Login() {
   return (0, import_react16.useEffect)(() => {
     var _a2, _b2, _c2, _d2;
     (_a2 = actionData == null ? void 0 : actionData.errors) != null && _a2.email && ((_b2 = emailRef == null ? void 0 : emailRef.current) == null || _b2.focus()), (_c2 = actionData == null ? void 0 : actionData.errors) != null && _c2.password && ((_d2 = passwordRef == null ? void 0 : passwordRef.current) == null || _d2.focus());
-  }, [actionData]), /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "flex min-h-full flex-col justify-center", children: /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "mx-auto w-full max-w-md px-8", children: /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(import_react17.Form, { method: "post", className: "space-y-6", noValidate: !0, children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "email", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("span", { className: "block text-gray-700", children: "Email Address" }, void 0, !1, {
+  }, [actionData]), /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("div", { className: "flex min-h-full flex-col justify-center", children: /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("div", { className: "mx-auto w-full max-w-md px-8", children: /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)(import_react17.Form, { method: "post", className: "space-y-6", noValidate: !0, children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "email", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("span", { className: "block text-gray-700", children: "Email Address" }, void 0, !1, {
           fileName: "app/routes/login.tsx",
           lineNumber: 100,
           columnNumber: 15
         }, this),
-        ((_a = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _a.email) && /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("span", { className: "block pt-1 text-red-700", id: "email-error", children: (_b = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _b.email }, void 0, !1, {
+        ((_a = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _a.email) && /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("span", { className: "block pt-1 text-red-700", id: "email-error", children: (_b = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _b.email }, void 0, !1, {
           fileName: "app/routes/login.tsx",
           lineNumber: 102,
           columnNumber: 17
@@ -4140,7 +4719,7 @@ function Login() {
         lineNumber: 99,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
+      /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)(
         "input",
         {
           className: "w-full rounded border border-gray-500 px-2 py-1 text-lg",
@@ -4166,19 +4745,19 @@ function Login() {
       lineNumber: 98,
       columnNumber: 11
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "password", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("span", { className: "block text-gray-700", children: "Password" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "password", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("span", { className: "block text-gray-700", children: "Password" }, void 0, !1, {
           fileName: "app/routes/login.tsx",
           lineNumber: 120,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("span", { className: "block font-light text-gray-700", children: "Must have at least 6 characters." }, void 0, !1, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("span", { className: "block font-light text-gray-700", children: "Must have at least 6 characters." }, void 0, !1, {
           fileName: "app/routes/login.tsx",
           lineNumber: 121,
           columnNumber: 15
         }, this),
-        ((_d = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _d.password) && /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("span", { className: "pt-1 text-red-700", id: "password-error", children: (_e = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _e.password }, void 0, !1, {
+        ((_d = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _d.password) && /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("span", { className: "pt-1 text-red-700", id: "password-error", children: (_e = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _e.password }, void 0, !1, {
           fileName: "app/routes/login.tsx",
           lineNumber: 125,
           columnNumber: 17
@@ -4188,7 +4767,7 @@ function Login() {
         lineNumber: 119,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
+      /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)(
         "input",
         {
           id: "password",
@@ -4214,7 +4793,7 @@ function Login() {
       lineNumber: 118,
       columnNumber: 11
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
+    /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)(
       "button",
       {
         className: "w-full rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400",
@@ -4230,14 +4809,14 @@ function Login() {
       },
       this
     ),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("input", { type: "hidden", name: "redirectTo", value: redirectTo }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("input", { type: "hidden", name: "redirectTo", value: redirectTo }, void 0, !1, {
       fileName: "app/routes/login.tsx",
       lineNumber: 147,
       columnNumber: 11
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "flex items-center justify-between", children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "flex items-center", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
+    /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("div", { className: "flex items-center", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)(
           "input",
           {
             className: "h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500",
@@ -4254,7 +4833,7 @@ function Login() {
           },
           this
         ),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
+        /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)(
           "label",
           {
             className: "ml-2 block text-sm text-gray-900",
@@ -4275,10 +4854,10 @@ function Login() {
         lineNumber: 149,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)("div", { className: "text-center text-sm text-gray-500", children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)("div", { className: "text-center text-sm text-gray-500", children: [
         "Don't have an account?",
         " ",
-        /* @__PURE__ */ (0, import_jsx_dev_runtime19.jsxDEV)(
+        /* @__PURE__ */ (0, import_jsx_dev_runtime21.jsxDEV)(
           import_react17.Link,
           {
             className: "text-blue-500 underline",
@@ -4328,7 +4907,7 @@ __export(join_exports, {
   meta: () => meta3
 });
 var import_node8 = require("@remix-run/node"), import_react18 = require("@remix-run/react");
-var import_react19 = require("react"), import_jsx_dev_runtime20 = require("react/jsx-dev-runtime"), meta3 = () => [
+var import_react19 = require("react"), import_jsx_dev_runtime22 = require("react/jsx-dev-runtime"), meta3 = () => [
   {
     title: "Sign Up"
   }
@@ -4372,15 +4951,15 @@ function Join() {
   return (0, import_react19.useEffect)(() => {
     var _a2, _b2, _c2, _d2;
     (_a2 = actionData == null ? void 0 : actionData.errors) != null && _a2.email && ((_b2 = emailRef == null ? void 0 : emailRef.current) == null || _b2.focus()), (_c2 = actionData == null ? void 0 : actionData.errors) != null && _c2.password && ((_d2 = passwordRef == null ? void 0 : passwordRef.current) == null || _d2.focus());
-  }, [actionData]), /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("div", { className: "flex min-h-full flex-col justify-center", children: /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("div", { className: "mx-auto w-full max-w-md px-8", children: /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)(import_react18.Form, { className: "space-y-6", method: "post", noValidate: !0, children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "email", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("span", { className: "block text-gray-700", children: "Email Address" }, void 0, !1, {
+  }, [actionData]), /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("div", { className: "flex min-h-full flex-col justify-center", children: /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("div", { className: "mx-auto w-full max-w-md px-8", children: /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)(import_react18.Form, { className: "space-y-6", method: "post", noValidate: !0, children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "email", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("span", { className: "block text-gray-700", children: "Email Address" }, void 0, !1, {
           fileName: "app/routes/join.tsx",
           lineNumber: 108,
           columnNumber: 15
         }, this),
-        ((_a = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _a.email) && /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("span", { className: "block pt-1 text-red-700", id: "email-error", children: (_b = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _b.email }, void 0, !1, {
+        ((_a = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _a.email) && /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("span", { className: "block pt-1 text-red-700", id: "email-error", children: (_b = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _b.email }, void 0, !1, {
           fileName: "app/routes/join.tsx",
           lineNumber: 110,
           columnNumber: 17
@@ -4390,7 +4969,7 @@ function Join() {
         lineNumber: 107,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)(
+      /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)(
         "input",
         {
           className: "w-full rounded border border-gray-500 px-2 py-1 text-lg",
@@ -4416,19 +4995,19 @@ function Join() {
       lineNumber: 106,
       columnNumber: 11
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "password", children: [
-        /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("span", { className: "block text-gray-700", children: "Password" }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("label", { className: "text-sm font-medium", htmlFor: "password", children: [
+        /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("span", { className: "block text-gray-700", children: "Password" }, void 0, !1, {
           fileName: "app/routes/join.tsx",
           lineNumber: 128,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("span", { className: "block font-light text-gray-700", children: "Must have at least 6 characters." }, void 0, !1, {
+        /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("span", { className: "block font-light text-gray-700", children: "Must have at least 6 characters." }, void 0, !1, {
           fileName: "app/routes/join.tsx",
           lineNumber: 129,
           columnNumber: 15
         }, this),
-        ((_d = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _d.password) && /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("span", { className: "pt-1 text-red-700", id: "password-error", children: (_e = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _e.password }, void 0, !1, {
+        ((_d = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _d.password) && /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("span", { className: "pt-1 text-red-700", id: "password-error", children: (_e = actionData == null ? void 0 : actionData.errors) == null ? void 0 : _e.password }, void 0, !1, {
           fileName: "app/routes/join.tsx",
           lineNumber: 133,
           columnNumber: 17
@@ -4438,7 +5017,7 @@ function Join() {
         lineNumber: 127,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)(
+      /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)(
         "input",
         {
           id: "password",
@@ -4464,7 +5043,7 @@ function Join() {
       lineNumber: 126,
       columnNumber: 11
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)(
+    /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)(
       "button",
       {
         className: "w-full rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400",
@@ -4480,15 +5059,15 @@ function Join() {
       },
       this
     ),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("input", { type: "hidden", name: "redirectTo", value: redirectTo }, void 0, !1, {
+    /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("input", { type: "hidden", name: "redirectTo", value: redirectTo }, void 0, !1, {
       fileName: "app/routes/join.tsx",
       lineNumber: 155,
       columnNumber: 11
     }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("div", { className: "flex items-center justify-center", children: /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)("div", { className: "text-center text-sm text-gray-500", children: [
+    /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("div", { className: "flex items-center justify-center", children: /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)("div", { className: "text-center text-sm text-gray-500", children: [
       "Already have an account?",
       " ",
-      /* @__PURE__ */ (0, import_jsx_dev_runtime20.jsxDEV)(
+      /* @__PURE__ */ (0, import_jsx_dev_runtime22.jsxDEV)(
         import_react18.Link,
         {
           className: "text-blue-500 underline",
@@ -4532,7 +5111,7 @@ function Join() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-RF5EGMA3.js", imports: ["/build/_shared/chunk-4FKIEHRQ.js", "/build/_shared/chunk-3BQGE6GF.js", "/build/_shared/chunk-DG4HR4CT.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-SZLGFGTK.js", imports: ["/build/_shared/chunk-24H4XGR2.js"], hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-FVN4W747.js", imports: ["/build/_shared/chunk-BRMF5TTN.js"], hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/contracts": { id: "routes/contracts", parentId: "root", path: "contracts", index: void 0, caseSensitive: void 0, module: "/build/routes/contracts-TUNQWSHF.js", imports: ["/build/_shared/chunk-BRIJ6RV6.js", "/build/_shared/chunk-BRMF5TTN.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/customers": { id: "routes/customers", parentId: "root", path: "customers", index: void 0, caseSensitive: void 0, module: "/build/routes/customers-SFIZ2U7S.js", imports: ["/build/_shared/chunk-BRIJ6RV6.js", "/build/_shared/chunk-BRMF5TTN.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/join": { id: "routes/join", parentId: "root", path: "join", index: void 0, caseSensitive: void 0, module: "/build/routes/join-RZM2UEYN.js", imports: ["/build/_shared/chunk-P6YNAKDB.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-4FRSSAHI.js", imports: ["/build/_shared/chunk-P6YNAKDB.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/logout": { id: "routes/logout", parentId: "root", path: "logout", index: void 0, caseSensitive: void 0, module: "/build/routes/logout-IVCPR3TQ.js", imports: void 0, hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 } }, cssBundleHref: void 0, version: "d96d4565", hmr: void 0, url: "/build/manifest-D96D4565.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-RF5EGMA3.js", imports: ["/build/_shared/chunk-4FKIEHRQ.js", "/build/_shared/chunk-3BQGE6GF.js", "/build/_shared/chunk-DG4HR4CT.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-E55ILENC.js", imports: ["/build/_shared/chunk-24H4XGR2.js"], hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !0 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-FVN4W747.js", imports: ["/build/_shared/chunk-BRMF5TTN.js"], hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/contracts": { id: "routes/contracts", parentId: "root", path: "contracts", index: void 0, caseSensitive: void 0, module: "/build/routes/contracts-ZIOIIZXY.js", imports: ["/build/_shared/chunk-6576KYBZ.js", "/build/_shared/chunk-BRMF5TTN.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/customers": { id: "routes/customers", parentId: "root", path: "customers", index: void 0, caseSensitive: void 0, module: "/build/routes/customers-NHTNGQVM.js", imports: ["/build/_shared/chunk-6576KYBZ.js", "/build/_shared/chunk-BRMF5TTN.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/join": { id: "routes/join", parentId: "root", path: "join", index: void 0, caseSensitive: void 0, module: "/build/routes/join-RZM2UEYN.js", imports: ["/build/_shared/chunk-P6YNAKDB.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/login": { id: "routes/login", parentId: "root", path: "login", index: void 0, caseSensitive: void 0, module: "/build/routes/login-4FRSSAHI.js", imports: ["/build/_shared/chunk-P6YNAKDB.js"], hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/logout": { id: "routes/logout", parentId: "root", path: "logout", index: void 0, caseSensitive: void 0, module: "/build/routes/logout-IVCPR3TQ.js", imports: void 0, hasAction: !0, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 } }, cssBundleHref: void 0, version: "06b86429", hmr: void 0, url: "/build/manifest-06B86429.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var assetsBuildDirectory = "public/build", future = { unstable_dev: !1, unstable_postcss: !1, unstable_tailwind: !1, v2_errorBoundary: !0, v2_meta: !0, v2_normalizeFormMethod: !0, v2_routeConvention: !0 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {

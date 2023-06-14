@@ -18,8 +18,8 @@ import { HiPlus } from "react-icons/hi";
 import DeleteModal from "~/components/modals/DeleteModal";
 import AddModal from "~/components/modals/AddModal";
 import UpdateItemModal from "~/components/modals/UpdateItemModal";
-import AddCustomerModalBody from "~/components/body-modals/AddCustomerModalBody";
-import UpdateCustomerModalBody from "~/components/body-modals/UpdateCustomerModalBody";
+import AddModalBody from "~/components/modal-body/customer/AddModalBody";
+import UpdateModalBody from "~/components/modal-body/customer/UpdateModalBody";
 import { Button } from "flowbite-react";
 
 const ITEMS_PER_PAGE = 10;
@@ -103,16 +103,16 @@ export async function action({ request }: ActionArgs) {
     return redirect("#");
   }
 
-  if (modal === "add") {
-    if (
-      first_name &&
-      last_name &&
-      national_id &&
-      position &&
-      salary &&
-      address_details &&
-      tel_no
-    ) {
+  if (
+    first_name &&
+    last_name &&
+    national_id &&
+    position &&
+    salary &&
+    address_details &&
+    tel_no
+  ) {
+    if (modal === "add") {
       await createCustomer({
         first_name: String(first_name),
         last_name: String(last_name),
@@ -125,18 +125,8 @@ export async function action({ request }: ActionArgs) {
 
       return redirect("#");
     }
-  }
 
-  if (modal === "edit") {
-    if (
-      first_name &&
-      last_name &&
-      national_id &&
-      position &&
-      salary &&
-      address_details &&
-      tel_no
-    ) {
+    if (modal === "edit") {
       await updateCustomer({
         customerId,
         first_name: String(first_name),
@@ -207,14 +197,12 @@ export default function CustomerPage() {
       <AddModal
         title="Add new customer"
         visible={modal === "add"}
-        body={<AddCustomerModalBody positions={positions} />}
+        body={<AddModalBody positions={positions} />}
       />
       <UpdateItemModal
-        title="Add new customer"
+        title="Edit customer"
         visible={modal === "edit"}
-        body={
-          <UpdateCustomerModalBody positions={positions} customer={customer} />
-        }
+        body={<UpdateModalBody positions={positions} customer={customer} />}
       />
     </Layout>
   );
